@@ -92,7 +92,7 @@ const Users = () => {
   return (
     <>
       <h2>{renderPhrase()}</h2>
-      {users.length > 0 ? renderTable() : ''}
+      {users.length > 0 && renderTable()}
     </>
   )
 }
