@@ -8,11 +8,13 @@ const SearchStatus = ({ length }) => {
   }
 
   return (
-    <span className={'badge m-1 bg-' + (length > 0 ? 'primary' : 'danger')}>
-      {length > 0
-        ? `${length} ${renderPhrase(length)} с тобой сегодня`
-        : 'Никто с тобой не тусанет'}
-    </span>
+    <h2>
+      <span className={'badge m-1 bg-' + (length > 0 ? 'primary' : 'danger')}>
+        {length > 0
+          ? `${length + ' ' + renderPhrase(length)} с тобой сегодня`
+          : 'Никто с тобой не тусанет'}
+      </span>
+    </h2>
   )
 }
 

@@ -10,12 +10,9 @@ const User = ({
   completedMeetings,
   rate,
   bookmark,
-  ...rest
+  onDelete,
+  onToggleBookmark,
 }) => {
-  const handleDelete = () => {
-    rest.onDelete(_id)
-  }
-
   return (
     <tr>
       <td>{name}</td>
@@ -26,16 +23,12 @@ const User = ({
       </td>
       <td>{profession.name}</td>
       <td>{completedMeetings}</td>
-      <td>{rate}</td>
+      <td>{rate} / 5</td>
       <td>
-        <Bookmark
-          _id={_id}
-          isFavorite={bookmark}
-          onToggleBookmark={rest.onToggleBookmark}
-        />
+        <Bookmark isFavorite={bookmark} onClick={() => onToggleBookmark(_id)} />
       </td>
       <td>
-        <button className="btn btn-danger" onClick={handleDelete}>
+        <button className="btn btn-danger" onClick={() => onDelete(_id)}>
           Удалить
         </button>
       </td>
