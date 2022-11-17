@@ -1,8 +1,8 @@
 import React from 'react'
 
-const Bookmark = ({ _id, isFavorite, ...rest }) => {
+const Bookmark = ({ _id, isFavorite, onToggleBookmark }) => {
   const handleToggleBookmark = () => {
-    rest.onToggleBookmark(_id)
+    onToggleBookmark(_id)
   }
 
   return (
