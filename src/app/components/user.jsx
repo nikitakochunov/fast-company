@@ -11,7 +11,7 @@ const User = ({
   rate,
   bookmark,
   onDelete,
-  onToggleBookmark,
+  onToggleBookmark
 }) => {
   return (
     <tr>
