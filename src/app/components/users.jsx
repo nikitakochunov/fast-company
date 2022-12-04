@@ -1,146 +1,94 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { paginate } from '../utils/paginate'
 import Pagination from './pagination'
 import User from './user'
 import PropTypes from 'prop-types'
+import api from '../api'
+import GroupList from './groupList'
+import SearchStatus from './searchStatus'
 
-// const Users = () => {
-//   const [users, setUsers] = useState(api.users.fetchAll())
-
-//   const handleDelete = (userId) => {
-//     setUsers((prevState) => prevState.filter((user) => user._id !== userId))
-//   }
-
-//   const getCorrectWords = () => {
-//     let endOfNum = users.length % 100
-
-//     if (endOfNum > 14) {
-//       endOfNum %= 10
-//     }
-
-//     const words = [2, 3, 4].includes(endOfNum)
-//       ? 'человека тусанут'
-//       : 'человек тусанет'
-
-//     return words
-//   }
-
-//   const renderPhrase = () => {
-//     const doUsersExist = users.length > 0
-
-//     let classes = 'badge m-2 bg-'
-//     classes += doUsersExist ? 'primary' : 'danger'
-
-//     const words = getCorrectWords()
-
-//     let text = doUsersExist
-//       ? `${users.length} ${words} с тобой сегодня`
-//       : 'Никто с тобой не тусанет'
-
-//     return <span className={classes}>{text}</span>
-//   }
-
-//   const renderQualitiesBadges = (qualities) => {
-//     return qualities.map((quality) => {
-//       const classes = 'badge m-1 bg-' + quality.color
-
-//       return (
-//         <span key={quality._id} className={classes}>
-//           {quality.name}
-//         </span>
-//       )
-//     })
-//   }
-
-//   const renderUsersRows = () => {
-//     return users.map((user) => {
-//       return (
-//         <tr key={user._id}>
-//           <th scope="row">{user.name}</th>
-//           <td>{renderQualitiesBadges(user.qualities)}</td>
-//           <td>{user.profession.name}</td>
-//           <td>{user.completedMeetings}</td>
-//           <td>{user.rate}/5</td>
-//           <td>
-//             <button
-//               className="btn btn-danger"
-//               onClick={() => handleDelete(user._id)}
-//             >
-//               Delete
-//             </button>
-//           </td>
-//         </tr>
-//       )
-//     })
-//   }
-
-//   const renderTable = () => {
-//     return (
-//       <table className="table">
-//         <thead>
-//           <tr>
-//             <th scope="col">Имя</th>
-//             <th scope="col">Качества</th>
-//             <th scope="col">Профессия</th>
-//             <th scope="col">Встретился, раз</th>
-//             <th scope="col">Оценка</th>
-//             <th></th>
-//           </tr>
-//         </thead>
-//         <tbody>{renderUsersRows()}</tbody>
-//       </table>
-//     )
-//   }
-
-//   return (
-//     <>
-//       <h2>{renderPhrase()}</h2>
-//       {users.length > 0 && renderTable()}
-//     </>
-//   )
-// }
-
-const Users = ({ users, ...rest }) => {
-  const count = users.length
-  const pageSize = 4
-
+const Users = ({ users: allUsers, ...rest }) => {
   const [currentPage, setCurrentPage] = useState(1)
+  const [professions, setProfessions] = useState()
+  const [selectedProf, setSelectedProf] = useState()
+
+  const pageSize = 2
+  useEffect(() => {
+    api.professions.fetchAll().then((data) => setProfessions(data))
+  }, [])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [selectedProf])
+
+  const handleProfessionSelect = (item) => {
+    setSelectedProf(item)
+  }
 
   const handlePageChange = (pageIndex) => {
     setCurrentPage(pageIndex)
   }
 
-  const userCrop = paginate(users, currentPage, pageSize)
+  const filteredUsers = selectedProf
+    ? allUsers.filter((user) => user.profession === selectedProf)
+    : allUsers
+
+  const count = filteredUsers.length
+
+  const userCrop = paginate(filteredUsers, currentPage, pageSize)
+
+  const clearFilter = () => {
+    setSelectedProf()
+  }
 
   return (
-    <>
-      {count > 0 && (
-        <table className="table">
-          <thead>
-            <tr>
-              <th scope="col">Имя</th>
-              <th scope="col">Качества</th>
-              <th scope="col">Профессия</th>
-              <th scope="col">Встретился, раз</th>
-              <th scope="col">Оценка</th>
-              <th scope="col">Избранное</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {userCrop.map((user) => (
-              <User key={user._id} {...user} {...rest} />
-            ))}
-          </tbody>
-        </table>
+    <div className="d-flex">
+      {professions && (
+        <div className="d-flex flex-column flex-shrink-0 p-3">
+          <GroupList
+            selectedItem={selectedProf}
+            items={professions}
+            onItemSelect={handleProfessionSelect}
+          />
+          <button className="btn btn-secondary mt-2" onClick={clearFilter}>
+            Очистить
+          </button>
+        </div>
       )}
-      <Pagination
-        itemsCount={count}
-        pageSize={pageSize}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-      />
-    </>
+      <div className="d-flex flex-column">
+        <SearchStatus length={count} />
+
+        {count > 0 && (
+          <table className="table">
+            <thead>
+              <tr>
+                <th scope="col">Имя</th>
+                <th scope="col">Качества</th>
+                <th scope="col">Профессия</th>
+                <th scope="col">Встретился, раз</th>
+                <th scope="col">Оценка</th>
+                <th scope="col">Избранное</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {userCrop.map((user) => (
+                <User key={user._id} {...user} {...rest} />
+              ))}
+            </tbody>
+          </table>
+        )}
+
+        <div className="d-flex justify-content-center">
+          <Pagination
+            itemsCount={count}
+            pageSize={pageSize}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      </div>
+    </div>
   )
 }
 
