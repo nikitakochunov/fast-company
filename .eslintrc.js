@@ -13,8 +13,15 @@ module.exports = {
   rules: {
     indent: ['error', 2],
     semi: ['error', 'never'],
-    'space-before-function-paren': ['error', 'never'],
     quotes: ['error', 'single'],
-    'comma-dangle': ['error', 'never']
+    'comma-dangle': ['error', 'never'],
+    'react/prop-types': 0,
+    'space-before-function-paren': [
+      'error',
+      {
+        anonymous: 'always',
+        named: 'never'
+      }
+    ]
   }
 }
