@@ -37,6 +37,12 @@ const Users = ({ users: allUsers, ...rest }) => {
 
   const userCrop = paginate(filteredUsers, currentPage, pageSize)
 
+  const isCurrentPageEmpty = !userCrop.length && filteredUsers.length
+
+  if (isCurrentPageEmpty) {
+    setCurrentPage((prevState) => prevState - 1)
+  }
+
   const clearFilter = () => {
     setSelectedProf()
   }
