@@ -33,7 +33,8 @@ const TableHeader = ({ columns, selectedSort, onSort }) => {
               <i
                 className={
                   'bi m-2 bi-caret-' +
-                  (selectedSort.order === 'desc' ? 'down-fill' : 'up-fill')
+                  (selectedSort.order === 'desc' ? 'down' : 'up') +
+                  '-fill'
                 }
               ></i>
             )}
