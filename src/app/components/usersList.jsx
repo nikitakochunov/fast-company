@@ -6,34 +6,14 @@ import GroupList from './groupList'
 import SearchStatus from './searchStatus'
 import UsersTable from './usersTable'
 import _ from 'lodash'
+import PropTypes from 'prop-types'
 
-const Users = () => {
+const UsersList = ({ users, onDelete, onToggleBookmark }) => {
   const [currentPage, setCurrentPage] = useState(1)
   const [professions, setProfessions] = useState()
   const [selectedProf, setSelectedProf] = useState()
   const [sortBy, setSortBy] = useState({ path: 'name', order: 'asc' })
   const pageSize = 8
-
-  const [users, setUsers] = useState()
-
-  useEffect(() => {
-    api.users.fetchAll().then((data) => setUsers(data))
-  }, [])
-
-  const handleDelete = (userId) => {
-    setUsers(users.filter((user) => user._id !== userId))
-  }
-
-  const handleToggleBookmark = (userId) => {
-    setUsers(
-      users.map((user) => {
-        if (user._id === userId) {
-          return { ...user, bookmark: !user.bookmark }
-        }
-        return user
-      })
-    )
-  }
 
   useEffect(() => {
     api.professions.fetchAll().then((data) => setProfessions(data))
@@ -99,8 +79,8 @@ const Users = () => {
           {count > 0 && (
             <UsersTable
               users={userCrop}
-              onDelete={handleDelete}
-              onToggleBookmark={handleToggleBookmark}
+              onDelete={onDelete}
+              onToggleBookmark={onToggleBookmark}
               onSort={handleSort}
               selectedSort={sortBy}
             />
@@ -122,4 +102,10 @@ const Users = () => {
   return 'Loading...'
 }
 
-export default Users
+UsersList.propTypes = {
+  users: PropTypes.arrayOf(PropTypes.object),
+  onDelete: PropTypes.func.isRequired,
+  onToggleBookmark: PropTypes.func.isRequired
+}
+
+export default UsersList
