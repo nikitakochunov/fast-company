@@ -7,6 +7,7 @@ import SearchStatus from './searchStatus'
 import UsersTable from './usersTable'
 import _ from 'lodash'
 import PropTypes from 'prop-types'
+import SearchBar from './searchBar'
 
 const UsersList = () => {
   const [currentPage, setCurrentPage] = useState(1)
@@ -42,6 +43,9 @@ const UsersList = () => {
 
   useEffect(() => {
     setCurrentPage(1)
+    if (selectedProf !== undefined) {
+      setSearchValue('')
+    }
   }, [selectedProf])
 
   const handleProfessionSelect = (item) => {
@@ -56,13 +60,32 @@ const UsersList = () => {
     setSortBy(item)
   }
 
+  const [searchValue, setSearchValue] = useState('')
+
+  const handleSearchChange = ({ target }) => {
+    setSearchValue(target.value)
+    console.log(target.value)
+  }
+
+  useEffect(() => {
+    if (searchValue !== '') {
+      setSelectedProf()
+    }
+  }, [searchValue])
+
   if (users) {
-    const filteredUsers = selectedProf
-      ? users.filter(
-          (user) =>
-            JSON.stringify(user.profession) === JSON.stringify(selectedProf)
-        )
-      : users
+    let filteredUsers = users
+
+    if (selectedProf) {
+      filteredUsers = users.filter(
+        (user) =>
+          JSON.stringify(user.profession) === JSON.stringify(selectedProf)
+      )
+    } else if (searchValue) {
+      filteredUsers = users.filter((user) =>
+        user.name.toLowerCase().includes(searchValue.toLowerCase())
+      )
+    }
 
     const count = filteredUsers.length
 
@@ -96,6 +119,8 @@ const UsersList = () => {
         )}
         <div className="d-flex flex-column">
           <SearchStatus length={count} />
+
+          <SearchBar onSearchChange={handleSearchChange} value={searchValue} />
 
           {count > 0 && (
             <UsersTable
