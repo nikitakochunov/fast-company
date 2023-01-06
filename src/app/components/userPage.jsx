@@ -18,17 +18,26 @@ const UserPage = ({ userId }) => {
 
   if (user) {
     return (
-      <div>
-        <h1>{user.name}</h1>
-        <h2>Профессия: {user.profession.name}</h2>
-        <QualitiesList qualities={user.qualities} />
-        <p>Встреч завершено: {user.completedMeetings}</p>
-        <h2>Оценка: {user.rate}</h2>
-        <button onClick={handleClick}>Все пользователи</button>
+      <div className="card w-50 m-4">
+        <div className="card-header">Карточка пользователя</div>
+        <div className="card-body">
+          <h1 className="card-title">{user.name}</h1>
+          <h2 className="card-subtitle text-muted mb-2">
+            Профессия: {user.profession.name}
+          </h2>
+          <QualitiesList qualities={user.qualities} />
+          <p className="card-text mt-2">
+            Встреч завершено: {user.completedMeetings}
+          </p>
+          <h2>Оценка: {user.rate}</h2>
+          <button className="btn btn-primary" onClick={handleClick}>
+            Все пользователи
+          </button>
+        </div>
       </div>
     )
   } else {
-    return <h1>Loading</h1>
+    return <h1>Загрузка...</h1>
   }
 }
 

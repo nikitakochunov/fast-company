@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const Quality = ({ color, name }) => {
-  return <span className={'badge m-1 bg-' + color}>{name}</span>
+  return <span className={'badge me-1 bg-' + color}>{name}</span>
 }
 
 Quality.propTypes = {

@@ -120,7 +120,7 @@ const UsersList = () => {
     )
   }
 
-  return 'Loading...'
+  return 'Загрузка...'
 }
 
 UsersList.propTypes = {
