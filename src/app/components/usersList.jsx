@@ -64,7 +64,6 @@ const UsersList = () => {
 
   const handleSearchChange = ({ target }) => {
     setSearchValue(target.value)
-    console.log(target.value)
   }
 
   useEffect(() => {
