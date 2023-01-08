@@ -7,7 +7,6 @@ import SearchStatus from './searchStatus'
 import UsersTable from './usersTable'
 import _ from 'lodash'
 import PropTypes from 'prop-types'
-import SearchBar from './searchBar'
 
 const UsersList = () => {
   const [currentPage, setCurrentPage] = useState(1)
@@ -17,6 +16,8 @@ const UsersList = () => {
   const pageSize = 8
 
   const [users, setUsers] = useState()
+
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     api.users.fetchAll().then((data) => setUsers(data))
@@ -43,12 +44,10 @@ const UsersList = () => {
 
   useEffect(() => {
     setCurrentPage(1)
-    if (selectedProf !== undefined) {
-      setSearchValue('')
-    }
-  }, [selectedProf])
+  }, [selectedProf, searchQuery])
 
   const handleProfessionSelect = (item) => {
+    if (searchQuery !== '') setSearchQuery('')
     setSelectedProf(item)
   }
 
@@ -60,17 +59,10 @@ const UsersList = () => {
     setSortBy(item)
   }
 
-  const [searchValue, setSearchValue] = useState('')
-
-  const handleSearchChange = ({ target }) => {
-    setSearchValue(target.value)
+  const handleSearchQuery = ({ target }) => {
+    setSelectedProf(undefined)
+    setSearchQuery(target.value)
   }
-
-  useEffect(() => {
-    if (searchValue !== '') {
-      setSelectedProf()
-    }
-  }, [searchValue])
 
   if (users) {
     let filteredUsers = users
@@ -80,9 +72,9 @@ const UsersList = () => {
         (user) =>
           JSON.stringify(user.profession) === JSON.stringify(selectedProf)
       )
-    } else if (searchValue) {
+    } else if (searchQuery) {
       filteredUsers = users.filter((user) =>
-        user.name.toLowerCase().includes(searchValue.toLowerCase())
+        user.name.toLowerCase().includes(searchQuery.toLowerCase())
       )
     }
 
@@ -119,7 +111,13 @@ const UsersList = () => {
         <div className="d-flex flex-column">
           <SearchStatus length={count} />
 
-          <SearchBar onSearchChange={handleSearchChange} value={searchValue} />
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Поиск..."
+            value={searchQuery}
+            onChange={handleSearchQuery}
+          />
 
           {count > 0 && (
             <UsersTable
