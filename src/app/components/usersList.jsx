@@ -17,6 +17,8 @@ const UsersList = () => {
 
   const [users, setUsers] = useState()
 
+  const [searchQuery, setSearchQuery] = useState('')
+
   useEffect(() => {
     api.users.fetchAll().then((data) => setUsers(data))
   }, [])
@@ -42,9 +44,10 @@ const UsersList = () => {
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [selectedProf])
+  }, [selectedProf, searchQuery])
 
   const handleProfessionSelect = (item) => {
+    if (searchQuery !== '') setSearchQuery('')
     setSelectedProf(item)
   }
 
@@ -56,13 +59,24 @@ const UsersList = () => {
     setSortBy(item)
   }
 
+  const handleSearchQuery = ({ target }) => {
+    setSelectedProf(undefined)
+    setSearchQuery(target.value)
+  }
+
   if (users) {
-    const filteredUsers = selectedProf
-      ? users.filter(
-          (user) =>
-            JSON.stringify(user.profession) === JSON.stringify(selectedProf)
-        )
-      : users
+    let filteredUsers = users
+
+    if (selectedProf) {
+      filteredUsers = users.filter(
+        (user) =>
+          JSON.stringify(user.profession) === JSON.stringify(selectedProf)
+      )
+    } else if (searchQuery) {
+      filteredUsers = users.filter((user) =>
+        user.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    }
 
     const count = filteredUsers.length
 
@@ -96,6 +110,14 @@ const UsersList = () => {
         )}
         <div className="d-flex flex-column">
           <SearchStatus length={count} />
+
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Поиск..."
+            value={searchQuery}
+            onChange={handleSearchQuery}
+          />
 
           {count > 0 && (
             <UsersTable
